@@ -30,7 +30,12 @@
 from ctypes import windll, wintypes
 import codecs
 from collections import defaultdict, namedtuple
-import cPickle as pickle
+
+try:
+  import cPickle as pickle
+except ImportError:
+  import pickle
+
 import hashlib
 import json
 import os
@@ -507,7 +512,7 @@ def findCompilerBinary():
 def printTraceStatement(msg):
     if "CLCACHE_LOG" in os.environ:
         script_dir = os.path.realpath(os.path.dirname(sys.argv[0]))
-        print os.path.join(script_dir, "clcache.py") + " " + msg
+        print(os.path.join(script_dir, "clcache.py") + " " + msg)
 
 def extractArgument(line, start, end):
     # If there are quotes from both sides of argument, remove them
@@ -814,7 +819,7 @@ def printStatistics():
     with cache.lock:
         stats = CacheStatistics(cache)
         cfg = Configuration(cache)
-        print """clcache statistics:
+        print("""clcache statistics:
   current cache dir        : %s
   cache size               : %d bytes
   maximum cache size       : %d bytes
@@ -842,6 +847,7 @@ def printStatistics():
            stats.numEvictedMisses(),
            stats.numHeaderChangedMisses(),
            stats.numSourceChangedMisses())
+  )
 
 def resetStatistics():
     cache = ObjectCache()
@@ -849,7 +855,7 @@ def resetStatistics():
         stats = CacheStatistics(cache)
         stats.resetCounters()
         stats.save()
-    print 'Statistics reset'
+    print('Statistics reset')
 
 # Returns pair - list of includes and new compiler output.
 # Output changes if strip is True in that case all lines with include
@@ -957,13 +963,13 @@ def processNoManifestMiss(stats, cache, outputFile, manifestHash, baseDir, compi
 
 def main():
     if len(sys.argv) == 2 and sys.argv[1] == "--help":
-        print """\
+        print("""\
     clcache.py v3.0.1
       --help   : show this help
       -s       : print cache statistics
       -z       : reset cache statistics
       -M <size>: set maximum cache size (in bytes)
-    """
+    """)
         return 0
 
     if len(sys.argv) == 2 and sys.argv[1] == "-s":
@@ -984,7 +990,7 @@ def main():
 
     compiler = findCompilerBinary()
     if not compiler:
-        print "Failed to locate cl.exe on PATH (and CLCACHE_CL is not set), aborting."
+        print("Failed to locate cl.exe on PATH (and CLCACHE_CL is not set), aborting.")
         return 1
 
     printTraceStatement("Found real compiler binary at '%s'" % compiler)
@@ -997,7 +1003,7 @@ def main():
         sys.stderr.write(compilerStderr)
         return exitCode
     except LogicException as e:
-        print e
+        print(e)
         return 1
 
 def processCompileRequest(compiler, args):
